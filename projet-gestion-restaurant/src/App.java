@@ -488,7 +488,6 @@ public class App {
             // Ajouter cette commande à la file d'attente
             clientsAyantCommande.add(nom);
             fileDAttente.remove(nom);
-            fileDAttente.poll(); // Suppression du client de la file d'attente
             commandesEnCours.put(nom, commande);
 
             // Afficher un message succès
