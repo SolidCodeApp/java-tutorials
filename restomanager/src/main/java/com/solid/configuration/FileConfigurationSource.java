@@ -8,16 +8,31 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Implementation of IConfigurationSource that loads configuration properties
+ * from a file located in the application's classpath.
+ */
 public class FileConfigurationSource implements IConfigurationSource {
 
     private static final Logger logger = LoggerFactory.getLogger(FileConfigurationSource.class);
     private String path;
 
+    /**
+     * Constructs a FileConfigurationSource with the specified path to the
+     * properties file.
+     *
+     * @param path the relative path to the configuration file in the classpath
+     */
     public FileConfigurationSource(String path) {
         this.path = path;
-
     }
 
+    /**
+     * Loads the configuration properties from the file.
+     *
+     * @return a Properties object containing key-value pairs from the file
+     * @throws IOException if the file is not found or cannot be read
+     */
     @Override
     public Properties load() throws IOException {
         logger.info("Loading file configuration...");
@@ -35,9 +50,8 @@ public class FileConfigurationSource implements IConfigurationSource {
             return properties;
 
         } catch (IOException exception) {
-            logger.error("Failed to lead properties : {}", exception.getMessage(), exception);
+            logger.error("Failed to load properties: {}", exception.getMessage(), exception);
             throw exception;
-
         }
     }
 }
