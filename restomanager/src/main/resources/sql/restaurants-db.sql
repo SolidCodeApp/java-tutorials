@@ -18,8 +18,8 @@ CREATE TABLE IF NOT EXISTS `restaurant_ticket` (
     `priority` VARCHAR(10) NOT NULL,
     `identifier` CHAR(6) NOT NULL,
     `creationDate` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `restaurantId`INT(11) UNSIGNED NOT NULL, 
-    UNIQUE(`restaurantId`, `identifier`),
+    `restaurantId` INT(11) UNSIGNED NOT NULL, 
+    CONSTRAINT `UK_ticket_restaurantId_identifier` UNIQUE (`restaurantId`, `identifier`),
     FOREIGN KEY (`restaurantId`) REFERENCES `restaurant`(`id`)
 ) ENGINE = InnoDB;
 
@@ -29,20 +29,19 @@ CREATE TABLE IF NOT EXISTS `restaurant_table` (
     `isAvailable` BOOLEAN DEFAULT TRUE,
     `identifier` CHAR(6) NOT NULL,
     `creationDate` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `restaurantId`INT(11) UNSIGNED NOT NULL, 
-    UNIQUE(`restaurantId`, `identifier`),
+    `restaurantId` INT(11) UNSIGNED NOT NULL, 
+    CONSTRAINT `UK_table_restaurantId_identifier` UNIQUE (`restaurantId`, `identifier`),
     FOREIGN KEY (`restaurantId`) REFERENCES `restaurant`(`id`)
 ) ENGINE = InnoDB;
-
 
 CREATE TABLE IF NOT EXISTS `restaurant_plate` (
     `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `size` VARCHAR(6) DEFAULT 'MEDIUM',
-    `isAvailable` BOOLEAN DEFAULT TRUE,
+    `isAvailable` BOOLEAN DEFAULT TRUE, 
     `identifier` CHAR(6) NOT NULL,
     `creationDate` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `restaurantId`INT(11) UNSIGNED NOT NULL, 
-    UNIQUE(`restaurantId`, `identifier`),
+    `restaurantId` INT(11) UNSIGNED NOT NULL, 
+    CONSTRAINT `UK_plate_restaurantId_identifier` UNIQUE (`restaurantId`, `identifier`),
     FOREIGN KEY (`restaurantId`) REFERENCES `restaurant`(`id`)
 ) ENGINE = InnoDB;
 
@@ -51,22 +50,23 @@ CREATE TABLE IF NOT EXISTS `restaurant_menu` (
     `identifier` CHAR(6) NOT NULL,
     `isspecial` BOOLEAN DEFAULT TRUE,
     `creationDate` DATETIME DEFAULT CURRENT_TIMESTAMP,
-    `restaurantId`INT(11) UNSIGNED NOT NULL, 
-    UNIQUE(`restaurantId`, `identifier`),
+    `restaurantId` INT(11) UNSIGNED NOT NULL, 
+    CONSTRAINT `UK_menu_restaurantId_identifier` UNIQUE (`restaurantId`, `identifier`),
     FOREIGN KEY (`restaurantId`) REFERENCES `restaurant`(`id`)
 ) ENGINE = InnoDB;
 
-
 CREATE TABLE IF NOT EXISTS `restaurant_menu_item` (
     `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    `price`DECIMAL (10, 2), 
+    `price` DECIMAL(10, 2), 
     `name` VARCHAR(100) NOT NULL,
-    `description` TEXT default null,
-    `identifier` char(6) NOT NULL UNIQUE,
+    `description` TEXT DEFAULT NULL,
+    `identifier` CHAR(6) NOT NULL,
     `creationDate` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `menuId` INT(11) UNSIGNED NOT NULL, 
+    CONSTRAINT `UK_menu_item_menuId_identifier` UNIQUE (`menuId`, `identifier`),
     FOREIGN KEY (`menuId`) REFERENCES `restaurant_menu`(`id`)
 ) ENGINE = InnoDB;
+
 
 
 CREATE TABLE IF NOT EXISTS `restaurant_order` (
@@ -79,7 +79,7 @@ CREATE TABLE IF NOT EXISTS `restaurant_order` (
    `bill` DECIMAL (15, 2),
     `ticketId` INT(11) UNSIGNED DEFAULT NULL, 
     `restaurantId` INT(11) UNSIGNED NOT NULL, 
-    UNIQUE(`restaurantId`, `identifier`),
+    CONSTRAINT `UK_order_restaurantId_identifier` UNIQUE (`restaurantId`, `identifier`),
     FOREIGN KEY (`restaurantId`) REFERENCES `restaurant`(`id`),
     FOREIGN KEY (`ticketId`) REFERENCES `restaurant_ticket`(`id`)
 ) ENGINE = InnoDB;
