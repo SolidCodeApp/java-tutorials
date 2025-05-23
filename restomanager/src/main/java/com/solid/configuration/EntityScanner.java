@@ -1,45 +1,46 @@
 package com.solid.configuration;
 
-import java.util.Set;
-
 import org.reflections.Reflections;
+import jakarta.persistence.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.persistence.Entity;
+import java.util.Set;
 
 /**
- * Utility class responsible for scanning a given package to find all classes
- * annotated with @Entity.
- * This is typically used in JPA/Hibernate contexts to dynamically discover
- * entity classes.
+ * Utility class that scans for classes annotated with {@code @Entity}
+ * using the Reflections library.
  */
 public class EntityScanner {
+
     private static final Logger logger = LoggerFactory.getLogger(EntityScanner.class);
 
-    private String packageName;
+    private final Reflections reflections;
 
     /**
-     * Constructs an EntityScanner with the specified base package.
-     * 
-     * @param packageName the package to scan for entity classes
+     * Constructs an EntityScanner using the provided Reflections instance.
+     * This allows scanning to be decoupled from fixed package names,
+     * making the class easier to test and reuse.
+     *
+     * @param reflections The Reflections instance used to find entity classes.
      */
-    public EntityScanner(String packageName) {
-        this.packageName = packageName;
+    public EntityScanner(Reflections reflections) {
+        this.reflections = reflections;
     }
 
     /**
-     * Scans the specified package for classes annotated with @Entity.
-     * 
-     * @return a set of classes annotated with @Entity
+     * Returns the set of classes annotated with {@code @Entity}
+     * discovered using the configured Reflections context.
+     *
+     * @return A set of classes annotated with {@code @Entity}.
      */
     public Set<Class<?>> scanForEntities() {
-        logger.info("Scanning for @Entity annotated classes in package : {}", packageName);
+        logger.info("Scanning for @Entity annotated classes...");
 
-        Reflections reflections = new Reflections(this.packageName);
-        Set<Class<?>> annotatededClasses = reflections.getTypesAnnotatedWith(Entity.class);
+        Set<Class<?>> annotatedEntities = reflections.getTypesAnnotatedWith(Entity.class);
 
-        logger.info("Found {} @Entity annotated classes.", annotatededClasses.size());
-        return annotatededClasses;
+        logger.info("Found {} @Entity annotated classes.", annotatedEntities.size());
+
+        return annotatedEntities;
     }
 }
