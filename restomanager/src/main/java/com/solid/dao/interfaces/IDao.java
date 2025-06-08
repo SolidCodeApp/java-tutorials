@@ -2,19 +2,17 @@ package com.solid.dao.interfaces;
 
 import java.util.List;
 import java.util.Optional;
-
 import com.solid.exceptions.DaoException;
-
 import jakarta.persistence.EntityManager;
 
 /**
- * Generic Data Access Object (DAO) interface for managing persistent entities.
- * 
- * This interface defines a contract for basic CRUD operations and
- * common query methods that can be implemented for any entity type.
+ * Generic Data Access Object (DAO) interface defining basic CRUD operations.
  *
  * @param <T>  the type of the entity
- * @param <ID> the type of the entity's identifier
+ * @param <ID> the type of the entity identifier
+ *
+ *             Author: Samano CASTRE
+ *             Date: 2025-06-08
  */
 public interface IDao<T, ID> {
 

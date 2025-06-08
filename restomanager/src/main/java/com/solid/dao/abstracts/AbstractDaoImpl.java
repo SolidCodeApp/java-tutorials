@@ -2,45 +2,21 @@ package com.solid.dao.abstracts;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.solid.dao.interfaces.IDao;
+import com.solid.enums.EErrorCode;
 import com.solid.exceptions.DaoException;
-import com.solid.exceptions.NonUniqueFieldException;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TransactionRequiredException;
 import jakarta.persistence.TypedQuery;
 
 /**
- * Generic abstract base class for Data Access Object (DAO) implementations.
- * <p>
- * This class provides a reusable and type-safe foundation for performing common
- * CRUD operations and simple queries on any JPA entity type.
- * It is parameterized by the entity type {@code T} and its identifier type
- * {@code ID},
- * and relies on an injected {@link EntityManager} to interact with the
- * persistence context.
- * <p>
- * All operations are logged at appropriate levels (info, debug, error), and
- * errors are
- * consistently wrapped into {@link DaoException}, ensuring clean separation
- * between
- * data access and business logic.
- * <p>
- * Subclasses should extend this class to gain access to:
- * <ul>
- * <li>Basic CRUD operations ({@code findById}, {@code findAll}, {@code save},
- * {@code delete})</li>
- * <li>Dynamic field-based queries ({@code findBy}, {@code findOneBy},
- * {@code findUniqueBy})</li>
- * <li>Built-in checks for field existence and result uniqueness</li>
- * </ul>
+ * Generic DAO implementation for CRUD operations using JPA EntityManager.
+ * Provides basic data access methods for entities of type T with identifier ID.
  * 
- * @param <T>  the type of the JPA entity
- * @param <ID> the type of the primary key of the entity
+ * Author: Samano CASTRE
+ * Date: 2025-06-08
  */
 public class AbstractDaoImpl<T, ID> implements IDao<T, ID> {
 
@@ -48,18 +24,21 @@ public class AbstractDaoImpl<T, ID> implements IDao<T, ID> {
 
     private final Class<T> entityClass;
 
+    /**
+     * Constructor initializing DAO for a specific entity class.
+     *
+     * @param entityClass the entity class this DAO manages
+     */
     public AbstractDaoImpl(Class<T> entityClass) {
         this.entityClass = entityClass;
     }
 
     /**
-     * Retrieves an entity by its primary key.
-     * Logs the operation at both info and debug levels for traceability.
-     * Throws a DaoException in case of invalid arguments or lookup failures.
+     * Finds an entity by its identifier.
      *
-     * @param entityManager the EntityManager used for the operation
-     * @param id            the primary key of the entity to retrieve
-     * @return an Optional containing the found entity, or empty if not found
+     * @param entityManager the JPA EntityManager to use
+     * @param id            the identifier of the entity to find
+     * @return Optional containing the found entity or empty if not found
      * @throws DaoException if an error occurs during retrieval
      */
     @Override
@@ -75,18 +54,16 @@ public class AbstractDaoImpl<T, ID> implements IDao<T, ID> {
             String errMessage = String.format("Failed to fetch entity of type '%s'.", entityClass.getSimpleName());
 
             logger.error(errMessage, exception);
-            throw new DaoException(errMessage, exception);
+            throw new DaoException(EErrorCode.DATA_ERROR, errMessage, exception);
         }
     }
 
     /**
-     * Retrieves all entities of the given type from the database.
-     * Constructs and executes a JPQL query dynamically based on the entity class.
-     * Logs the query and handles potential issues gracefully.
+     * Retrieves all entities of the managed type.
      *
-     * @param entityManager the EntityManager used for the operation
-     * @return a List containing all entities found
-     * @throws DaoException if the query construction or execution fails
+     * @param entityManager the JPA EntityManager to use
+     * @return list of all entities
+     * @throws DaoException if an error occurs during retrieval
      */
     @Override
     public List<T> findAll(EntityManager entityManager) throws DaoException {
@@ -99,26 +76,23 @@ public class AbstractDaoImpl<T, ID> implements IDao<T, ID> {
             logger.debug("JPQL Query: {}", query);
 
             return entityManager.createQuery(query, entityClass).getResultList();
+
         } catch (IllegalArgumentException exception) {
             String errMessage = String.format("Failed to fetch all entities of type '%s'.",
                     entityClass.getSimpleName());
 
             logger.error(errMessage, exception);
-            throw new DaoException(errMessage, exception);
+            throw new DaoException(EErrorCode.DATA_ERROR, errMessage, exception);
         }
     }
 
     /**
-     * Persists a new entity or updates an existing one in the database.
-     * Delegates to {@code EntityManager.merge()}, which handles both insert and
-     * update logic.
-     * Ensures transactional context is present and logs key steps and exceptions.
+     * Saves or updates the given entity.
      *
-     * @param entityManager the EntityManager used to perform the operation
-     * @param entity        the entity to be saved or updated
-     * @return an Optional containing the managed instance of the entity
-     * @throws DaoException if the entity is invalid or if no active transaction is
-     *                      present
+     * @param entityManager the JPA EntityManager to use
+     * @param entity        the entity to save or update
+     * @return Optional containing the persisted entity
+     * @throws DaoException if an error occurs during persistence
      */
     @Override
     public Optional<T> save(EntityManager entityManager, T entity) throws DaoException {
@@ -132,27 +106,22 @@ public class AbstractDaoImpl<T, ID> implements IDao<T, ID> {
             String errMessage = String.format("Failed to save or update entity of type '%s'.",
                     entityClass.getSimpleName());
             logger.error(errMessage, exception);
-            throw new DaoException(errMessage, exception);
+            throw new DaoException(EErrorCode.DATA_ERROR, errMessage, exception);
 
         } catch (TransactionRequiredException exception) {
             String errMessage = String.format("Failed to save or update entity of type '%s'. A transaction is required",
                     entityClass.getSimpleName());
             logger.error(errMessage, exception);
-            throw new DaoException(errMessage, exception);
+            throw new DaoException(EErrorCode.DATA_ERROR, errMessage, exception);
         }
     }
 
     /**
-     * Deletes the given entity from the database.
-     * Verifies that the entity is managed by the {@code EntityManager} before
-     * attempting removal.
-     * If the entity is detached, a {@code DaoException} is thrown to prevent silent
-     * failure.
+     * Deletes the given entity.
      *
-     * @param entityManager the EntityManager used to perform the deletion
+     * @param entityManager the JPA EntityManager to use
      * @param entity        the entity to delete
-     * @throws DaoException if the entity is not managed, if arguments are invalid,
-     *                      or if no active transaction is present
+     * @throws DaoException if an error occurs during deletion
      */
     @Override
     public void delete(EntityManager entityManager, T entity) throws DaoException {
@@ -163,7 +132,7 @@ public class AbstractDaoImpl<T, ID> implements IDao<T, ID> {
                 String errMessage = String.format("Entity of type '%s' is detached and cannot be deleted directly." +
                         "Please persist it first if needed.", entityClass.getSimpleName());
                 logger.error(errMessage);
-                throw new DaoException(errMessage);
+                throw new DaoException(EErrorCode.DATA_ERROR, errMessage);
 
             }
 
@@ -173,25 +142,24 @@ public class AbstractDaoImpl<T, ID> implements IDao<T, ID> {
                     "Invalid argument provided.",
                     entityClass.getSimpleName());
             logger.error(errMessage, exception);
-            throw new DaoException(errMessage, exception);
+            throw new DaoException(EErrorCode.DATA_ERROR, errMessage, exception);
 
         } catch (TransactionRequiredException exception) {
             String errMessage = String.format("Failed to delete entity of type '%s'. A transaction is required",
                     entityClass.getSimpleName());
             logger.error(errMessage, exception);
-            throw new DaoException(errMessage, exception);
+            throw new DaoException(EErrorCode.DATA_ERROR, errMessage, exception);
         }
     }
 
     /**
-     * Retrieves a list of entities filtered by the specified field and value.
-     * Validates that the field exists before executing the query.
+     * Finds entities filtered by a specified field and value.
      *
-     * @param entityManager the EntityManager used to perform the query
-     * @param fieldName     the name of the field to filter by
-     * @param value         the value the field should match
-     * @return a list of matching entities
-     * @throws DaoException if the field does not exist or the query fails
+     * @param entityManager the JPA EntityManager to use
+     * @param fieldName     the field name to filter by
+     * @param value         the value of the field
+     * @return list of matching entities
+     * @throws DaoException if an error occurs during query or if field is invalid
      */
     @Override
     public List<T> findBy(EntityManager entityManager, String fieldName, Object value) throws DaoException {
@@ -206,20 +174,19 @@ public class AbstractDaoImpl<T, ID> implements IDao<T, ID> {
             String errMessage = String.format("Failed to fetch list of entities of type '%s' using field '%s'",
                     entityClass.getSimpleName(), fieldName);
             logger.error(errMessage, exception);
-            throw new DaoException(errMessage, exception);
+            throw new DaoException(EErrorCode.DATA_ERROR, errMessage, exception);
         }
     }
 
     /**
-     * Builds a JPQL SELECT query to retrieve entities filtered by a single field
-     * and its value.
-     * The field is dynamically injected into the query string.
+     * Builds a JPQL TypedQuery to select entities filtered by a specific field and
+     * value.
      *
-     * @param entityManager the EntityManager used to create the query
-     * @param fieldName     the name of the field to filter by
-     * @param value         the value to match against the specified field
-     * @return a TypedQuery ready to be executed
-     * @throws DaoException if the query construction fails
+     * @param entityManager the JPA EntityManager to create the query
+     * @param fieldName     the name of the entity field to filter by
+     * @param value         the value of the field to match
+     * @return a TypedQuery configured with the filter parameter
+     * @throws DaoException if query creation fails
      */
     private TypedQuery<T> buildSelectByFieldQuery(EntityManager entityManager, String fieldName, Object value) {
         try {
@@ -239,10 +206,17 @@ public class AbstractDaoImpl<T, ID> implements IDao<T, ID> {
                     entityClass.getSimpleName());
 
             logger.error(errMessage, exception);
-            throw new DaoException(errMessage, exception);
+            throw new DaoException(EErrorCode.DATA_ERROR, errMessage, exception);
         }
     }
 
+    /**
+     * Ensures the entity class contains the specified field.
+     *
+     * @param fieldName the field name to verify
+     * @return the field name if exists
+     * @throws IllegalArgumentException if the field does not exist
+     */
     protected String ensureFieldExists(String fieldName) {
         try {
             return entityClass.getDeclaredField(fieldName).getName();
@@ -260,16 +234,13 @@ public class AbstractDaoImpl<T, ID> implements IDao<T, ID> {
     }
 
     /**
-     * Fetches a single entity by a given field and value.
-     * If multiple results are found, only the first one is returned (without
-     * enforcing uniqueness).
+     * Finds one entity filtered by a specified field and value.
      *
-     * @param entityManager the EntityManager used to perform the query
-     * @param fieldName     the name of the field to filter by
-     * @param value         the value that the field must match
-     * @return an Optional containing the first matching entity, or empty if none
-     *         found
-     * @throws DaoException if any error occurs during the query execution
+     * @param entityManager the JPA EntityManager to use
+     * @param fieldName     the field name to filter by
+     * @param value         the value of the field
+     * @return Optional containing the found entity or empty if none found
+     * @throws DaoException if an error occurs during query or if field is invalid
      */
     @Override
     public Optional<T> findOneBy(EntityManager entityManager, String fieldName, Object value) throws DaoException {
@@ -294,26 +265,19 @@ public class AbstractDaoImpl<T, ID> implements IDao<T, ID> {
                     fieldName);
 
             logger.error(errMessage, exception);
-            throw new DaoException(errMessage, exception);
+            throw new DaoException(EErrorCode.DATA_ERROR, errMessage, exception);
         }
     }
 
     /**
-     * Attempts to retrieve a single, unique entity of the given type based on a
-     * specified field and value.
-     * <p>
-     * This method enforces uniqueness: if more than one matching entity is found,
-     * a {@link NonUniqueFieldException} is thrown internally and wrapped in a
-     * {@link DaoException}.
-     * <p>
-     * The field name is validated beforehand to prevent runtime query errors.
+     * Finds a unique entity filtered by a specified field and value.
+     * Throws an exception if more than one entity matches.
      *
-     * @param entityManager the EntityManager to use for the query
-     * @param fieldName     the name of the field to filter by
-     * @param value         the value to match against the field
-     * @return an {@link Optional} containing the matching entity if found, or empty
-     *         if no match exists
-     * @throws DaoException if the query fails or if the result is not unique
+     * @param entityManager the JPA EntityManager to use
+     * @param fieldName     the field name to filter by
+     * @param value         the value of the field
+     * @return Optional containing the unique found entity or empty if none found
+     * @throws DaoException if an error occurs or if uniqueness is violated
      */
     @Override
     public Optional<T> findUniqueBy(EntityManager entityManager, String fieldName, Object value) throws DaoException {
@@ -338,23 +302,16 @@ public class AbstractDaoImpl<T, ID> implements IDao<T, ID> {
                     entityClass.getSimpleName());
 
             logger.error(errMessage, exception);
-            throw new DaoException(errMessage, exception);
+            throw new DaoException(EErrorCode.DATA_ERROR, errMessage, exception);
         }
     }
 
     /**
-     * Validates that the provided list contains at most one entity, ensuring
-     * uniqueness.
-     * <p>
-     * This method is typically used after executing a query that is expected to
-     * return a unique result.
-     * If more than one entity is found, a {@link NonUniqueFieldException} is
-     * thrown.
-     * Detailed logs are written at both error and debug levels to assist in
-     * diagnostics.
+     * Checks if the list contains more than one entity and throws
+     * an exception if uniqueness is violated.
      *
-     * @param list the list of entities to validate
-     * @throws NonUniqueFieldException if the list contains more than one entity
+     * @param list the list of entities to check
+     * @throws RuntimeException if multiple entities are found
      */
     protected void checkUniqueness(List<T> list) {
         if (list.size() > 1) {
@@ -368,7 +325,7 @@ public class AbstractDaoImpl<T, ID> implements IDao<T, ID> {
                     entityClass.getSimpleName(),
                     list);
 
-            throw new NonUniqueFieldException(errMessage);
+            throw new RuntimeException(errMessage);
         }
     }
 

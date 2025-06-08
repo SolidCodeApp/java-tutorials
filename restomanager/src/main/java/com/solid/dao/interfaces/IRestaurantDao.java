@@ -3,32 +3,25 @@ package com.solid.dao.interfaces;
 import java.util.Optional;
 import com.solid.entities.RestaurantEntity;
 import com.solid.exceptions.DaoException;
-
 import jakarta.persistence.EntityManager;
 
 /**
- * Data Access Object (DAO) interface for {@link RestaurantEntity}.
- * 
- * Extends the generic {@link IDao} interface to provide CRUD operations
- * and common query methods specifically for {@link RestaurantEntity}.
- * 
- * This interface defines the DAO contract for handling restaurant entities,
- * typically identified by an integer ID.
+ * DAO interface for Restaurant entities.
+ * Provides data access methods specific to Restaurant.
+ *
+ * Author: Samano CASTRE
+ * Date: 2025-06-08
  */
 public interface IRestaurantDao extends IDao<RestaurantEntity, Integer> {
 
     /**
-     * Finds a unique {@link RestaurantEntity} by its identifier.
-     * 
-     * This method allows querying a restaurant by a unique identifier, such as
-     * a restaurant code or slug, ensuring that the entity is uniquely associated
-     * with that identifier.
+     * Finds a unique Restaurant entity by its identifier.
      *
-     * @param entityManager the {@link EntityManager} to use for the query
+     * @param entityManager the EntityManager to use for the query
      * @param identifier    the unique identifier of the restaurant
-     * @return an {@link Optional} containing the restaurant if found, or empty if
-     *         not found
-     * @throws DaoException if the operation fails
+     * @return an Optional containing the Restaurant entity if found, empty
+     *         otherwise
+     * @throws DaoException if a data access error occurs
      */
     public Optional<RestaurantEntity> findUniqueByIdentifier(
             EntityManager entityManager,

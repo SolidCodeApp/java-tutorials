@@ -3,27 +3,48 @@ package com.solid.dao.abstracts;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import com.solid.dao.interfaces.IRestaurantRelatedDao;
 import com.solid.entities.RestaurantEntity;
+import com.solid.enums.EErrorCode;
 import com.solid.exceptions.DaoException;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 
+/**
+ * Abstract DAO implementation for entities related to RestaurantEntity.
+ * Extends AbstractDaoImpl with restaurant-specific query capabilities,
+ * including unique fetch by restaurant and identifier, and date-range
+ * filtering.
+ * 
+ * Author: Samano CASTRE
+ * Date: 2025-06-08
+ */
 public abstract class AbstractRestaurantRelatedDaoImpl<T, ID>
         extends AbstractDaoImpl<T, ID>
         implements IRestaurantRelatedDao<T, ID> {
 
     private Logger logger = LoggerFactory.getLogger(AbstractRestaurantRelatedDaoImpl.class);
 
+    /**
+     * Constructor initializing the DAO with the entity class type.
+     *
+     * @param entityClass the class of the entity this DAO manages
+     */
     public AbstractRestaurantRelatedDaoImpl(Class<T> entityClass) {
         super(entityClass);
     }
 
+    /**
+     * Finds a unique entity by its identifier and associated RestaurantEntity.
+     *
+     * @param entityManager    the JPA EntityManager
+     * @param targetIdentifier the identifier value to filter by
+     * @param restaurant       the RestaurantEntity to filter by
+     * @return an Optional containing the unique entity if found
+     * @throws DaoException if the query fails or multiple results are found
+     */
     @Override
     public Optional<T> findUniqueByRestaurant(EntityManager entityManager, String targetIdentifier,
             RestaurantEntity restaurant) throws DaoException {
@@ -61,15 +82,34 @@ public abstract class AbstractRestaurantRelatedDaoImpl<T, ID>
                     " Using fields ('identifier', 'restaurant')", entityName);
 
             logger.error(errMessage, exception);
-            throw new DaoException(errMessage, exception);
+            throw new DaoException(EErrorCode.DATA_ERROR, errMessage, exception);
         }
     }
 
+    /**
+     * Finds all entities associated with the given RestaurantEntity.
+     *
+     * @param entityManager the JPA EntityManager
+     * @param restaurant    the RestaurantEntity to filter by
+     * @return list of entities related to the specified restaurant
+     * @throws DaoException if the query fails
+     */
     @Override
     public List<T> findByRestaurant(EntityManager entityManager, RestaurantEntity restaurant) throws DaoException {
         return super.findBy(entityManager, "restaurant", restaurant);
     }
 
+    /**
+     * Finds all entities related to a RestaurantEntity filtered by a creation date
+     * range.
+     *
+     * @param entityManager the JPA EntityManager
+     * @param restaurant    the RestaurantEntity to filter by
+     * @param startDate     the start of the creation date range (inclusive)
+     * @param endDate       the end of the creation date range (inclusive)
+     * @return list of entities filtered by restaurant and creation date range
+     * @throws DaoException if the query fails
+     */
     @Override
     public List<T> findByRestaurantWithCreationDateRange(EntityManager entityManager,
             RestaurantEntity restaurant,
@@ -104,7 +144,7 @@ public abstract class AbstractRestaurantRelatedDaoImpl<T, ID>
                     + " by date range for a restaurant", entityName);
 
             logger.error(errMessage, exception);
-            throw new DaoException(errMessage, exception);
+            throw new DaoException(EErrorCode.DATA_ERROR, errMessage, exception);
         }
     }
 

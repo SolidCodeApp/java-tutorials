@@ -3,13 +3,11 @@ package com.solid.dao.interfaces;
 import com.solid.entities.MenuItemEntity;
 
 /**
- * Data Access Object (DAO) interface for {@link MenuItemEntity}.
+ * DAO interface for MenuItem entities.
+ * Provides basic CRUD operations for menu items.
  *
- * Extends the generic {@link IDao} interface to provide CRUD operations
- * and common query methods for menu item entities.
- *
- * This interface defines the DAO contract for managing MenuItem records,
- * typically identified by an integer ID.
+ * Author: Samano CASTRE
+ * Date: 2025-06-08
  */
 public interface IMenuItemDao extends IDao<MenuItemEntity, Integer> {
 
