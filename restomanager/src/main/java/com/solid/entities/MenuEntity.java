@@ -33,7 +33,7 @@ public class MenuEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, columnDefinition = "char(6)")
+    @Column(nullable = false, columnDefinition = "char(13)")
     private String identifier;
 
     @Column(nullable = false)

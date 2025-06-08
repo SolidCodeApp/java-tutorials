@@ -17,7 +17,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
 @Setter
@@ -36,7 +38,7 @@ public class RestaurantEntity {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(unique = true, nullable = false, columnDefinition = "char(6)")
+    @Column(unique = true, nullable = false, columnDefinition = "char(13)")
     private String identifier;
 
     @Column(nullable = true, columnDefinition = "TEXT")

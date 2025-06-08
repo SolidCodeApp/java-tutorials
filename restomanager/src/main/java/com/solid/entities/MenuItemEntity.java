@@ -39,7 +39,7 @@ public class MenuItemEntity {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(nullable = false, columnDefinition = "char(6)")
+    @Column(nullable = false, columnDefinition = "char(13)")
     private String identifier;
 
     @Column(insertable = false, updatable = false)

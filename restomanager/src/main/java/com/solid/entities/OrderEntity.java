@@ -41,7 +41,7 @@ public class OrderEntity {
     @Column(nullable = false)
     private Short nbPersons;
 
-    @Column(nullable = false, columnDefinition = "char(6)")
+    @Column(nullable = false, columnDefinition = "char(13)")
     private String identifier;
 
     @Column(insertable = false, updatable = false)

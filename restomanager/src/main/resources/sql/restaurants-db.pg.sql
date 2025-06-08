@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS restaurant (
     name VARCHAR(100) NOT NULL,
     description TEXT,  
     address VARCHAR(255),  
-    identifier CHAR(6) NOT NULL UNIQUE,
+    identifier CHAR(13) NOT NULL UNIQUE,
     creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS restaurant_ticket (
     id SERIAL PRIMARY KEY,
     hasOrdered BOOLEAN DEFAULT TRUE,
     priority VARCHAR(10) NOT NULL,
-    identifier CHAR(6) NOT NULL,
+    identifier CHAR(13) NOT NULL,
     creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     restaurantId INT NOT NULL, 
     CONSTRAINT UK_ticket_restaurantId_identifier UNIQUE (restaurantId, identifier),
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS restaurant_table (
     id SERIAL PRIMARY KEY,
     nbPlaces SMALLINT CHECK (nbPlaces > 0),  -- Vérifier que le nombre de places est positif
     isAvailable BOOLEAN DEFAULT TRUE,
-    identifier CHAR(6) NOT NULL,
+    identifier CHAR(13) NOT NULL,
     creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     restaurantId INT NOT NULL, 
     CONSTRAINT UK_table_restaurantId_identifier UNIQUE (restaurantId, identifier),
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS restaurant_plate (
     id SERIAL PRIMARY KEY,
     size VARCHAR(6) DEFAULT 'MEDIUM',
     isAvailable BOOLEAN DEFAULT TRUE, 
-    identifier CHAR(6) NOT NULL,
+    identifier CHAR(13) NOT NULL,
     creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     restaurantId INT NOT NULL, 
     CONSTRAINT UK_plate_restaurantId_identifier UNIQUE (restaurantId, identifier),
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS restaurant_plate (
 -- Création de la table restaurant_menu
 CREATE TABLE IF NOT EXISTS restaurant_menu (
     id SERIAL PRIMARY KEY,
-    identifier CHAR(6) NOT NULL,
+    identifier CHAR(13) NOT NULL,
     isspecial BOOLEAN DEFAULT TRUE,
     creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     restaurantId INT NOT NULL, 
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS restaurant_menu_item (
     price DECIMAL(10, 2), 
     name VARCHAR(100) NOT NULL,
     description TEXT,  
-    identifier CHAR(6) NOT NULL,
+    identifier CHAR(13) NOT NULL,
     creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     menuId INT NOT NULL, 
     CONSTRAINT UK_menu_item_menuId_identifier UNIQUE (menuId, identifier),
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS restaurant_menu_item (
 CREATE TABLE IF NOT EXISTS restaurant_order (
     id SERIAL PRIMARY KEY,
     nbPersons SMALLINT CHECK (nbPersons >= 0),  -- Vérifier que le nombre de personnes est positif
-    identifier CHAR(6) NOT NULL,
+    identifier CHAR(13) NOT NULL,
     creationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     status CHAR(6) NOT NULL,
     priority VARCHAR(10) NOT NULL,

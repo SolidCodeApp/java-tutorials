@@ -42,7 +42,7 @@ public class TicketEntity {
     @Column(nullable = false)
     private EClientPriority priority;
 
-    @Column(nullable = false, columnDefinition = "char(6)")
+    @Column(nullable = false, columnDefinition = "char(13)")
     private String identifier;
 
     @Column(insertable = false, updatable = false)

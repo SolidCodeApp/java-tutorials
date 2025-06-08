@@ -35,7 +35,7 @@ public class TableEntity {
     @Column(insertable = false, updatable = true)
     private Boolean isAvailable;
 
-    @Column(nullable = false, columnDefinition = "char(6)")
+    @Column(nullable = false, columnDefinition = "char(13)")
     private String identifier;
 
     @Column(insertable = false, updatable = false)

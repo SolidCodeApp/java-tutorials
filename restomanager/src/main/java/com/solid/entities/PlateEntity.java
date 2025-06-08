@@ -41,7 +41,7 @@ public class PlateEntity {
     @Column(nullable = false)
     private Boolean isAvailable = true;
 
-    @Column(nullable = false, columnDefinition = "char(6)")
+    @Column(nullable = false, columnDefinition = "char(13)")
     private String identifier;
 
     @Column(insertable = false, updatable = false)

@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `restaurant` (
     `name` VARCHAR(100) NOT NULL,
     `description` TEXT default null,
     `address` VARCHAR(255) default null,
-    `identifier` char(6) NOT NULL UNIQUE,
+    `identifier` char(13) NOT NULL UNIQUE, 
     `creationDate` DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE = InnoDB;
 
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `restaurant_ticket` (
     `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `hasOrdered` BOOLEAN DEFAULT TRUE,
     `priority` VARCHAR(10) NOT NULL,
-    `identifier` CHAR(6) NOT NULL,
+    `identifier` char(13) NOT NULL,
     `creationDate` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `restaurantId` INT(11) UNSIGNED NOT NULL, 
     CONSTRAINT `UK_ticket_restaurantId_identifier` UNIQUE (`restaurantId`, `identifier`),
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `restaurant_table` (
     `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `nbPlaces` TINYINT DEFAULT 4,
     `isAvailable` BOOLEAN DEFAULT TRUE,
-    `identifier` CHAR(6) NOT NULL,
+    `identifier` char(13) NOT NULL,
     `creationDate` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `restaurantId` INT(11) UNSIGNED NOT NULL, 
     CONSTRAINT `UK_table_restaurantId_identifier` UNIQUE (`restaurantId`, `identifier`),
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `restaurant_plate` (
     `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `size` VARCHAR(6) DEFAULT 'MEDIUM',
     `isAvailable` BOOLEAN DEFAULT TRUE, 
-    `identifier` CHAR(6) NOT NULL,
+    `identifier` char(13) NOT NULL,
     `creationDate` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `restaurantId` INT(11) UNSIGNED NOT NULL, 
     CONSTRAINT `UK_plate_restaurantId_identifier` UNIQUE (`restaurantId`, `identifier`),
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `restaurant_plate` (
 
 CREATE TABLE IF NOT EXISTS `restaurant_menu` (
     `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-    `identifier` CHAR(6) NOT NULL,
+    `identifier` char(13) NOT NULL,
     `isspecial` BOOLEAN DEFAULT TRUE,
     `creationDate` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `restaurantId` INT(11) UNSIGNED NOT NULL, 
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `restaurant_menu_item` (
     `price` DECIMAL(10, 2), 
     `name` VARCHAR(100) NOT NULL,
     `description` TEXT DEFAULT NULL,
-    `identifier` CHAR(6) NOT NULL,
+    `identifier` char(13) NOT NULL,
     `creationDate` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `menuId` INT(11) UNSIGNED NOT NULL, 
     CONSTRAINT `UK_menu_item_menuId_identifier` UNIQUE (`menuId`, `identifier`),
@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `restaurant_menu_item` (
 CREATE TABLE IF NOT EXISTS `restaurant_order` (
     `id` INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     `nbPersons` SMALLINT UNSIGNED NOT NULL, 
-    `identifier` CHAR(6) NOT NULL,
+    `identifier` char(13) NOT NULL,
     `creationDate` DATETIME DEFAULT CURRENT_TIMESTAMP,
     `status` CHAR(6) NOT NULL,
    `priority` VARCHAR(10) NOT NULL,
